@@ -230,8 +230,8 @@ class Player extends Shape {
 var cvs = document.getElementById("canvas");
 var ctx = cvs.getContext("2d");
 
-ctx.canvas.width  = window.innerWidth;
-ctx.canvas.height = window.innerHeight;
+ctx.canvas.width  = 3000;
+ctx.canvas.height = 3000*window.innerHeight/window.innerWidth;
 
 var bdyshImg = new Image();
 var gameOverImg = new Image();
