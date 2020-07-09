@@ -357,6 +357,7 @@ function draw() {
 }
 
 document.addEventListener("keydown", onKeydown);
+document.addEventListener("mousedown", onKeydown);
 
 var loadCounter = 0;
 function onload(){
