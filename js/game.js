@@ -126,7 +126,7 @@ class BarrierBottom extends Barrier {
     }
     onload(){
         super.onload();
-        this.y -= this.img.height*0.3;
+        this.y -= this.img.height*0.4;
     }
     /*inBarrier(player){
 
@@ -167,6 +167,11 @@ class Hole extends BarrierBottom {
     }
     isHole(){
         return true;
+    }
+    inBarrier(player){
+        var padding = this.img.width / 4;
+        return (this.left() + padding < player.right() && player.left() < this.right() - padding 
+            && this.top() < player.bottom());
     }
 }
 
@@ -230,8 +235,8 @@ class Player extends Shape {
 var cvs = document.getElementById("canvas");
 var ctx = cvs.getContext("2d");
 
-ctx.canvas.width  = 3000;
-ctx.canvas.height = 1500;
+ctx.canvas.width  = 4000;
+ctx.canvas.height = 2000;
 
 var bdyshImg = new Image();
 var gameOverImg = new Image();
@@ -357,7 +362,7 @@ function draw() {
 }
 
 document.addEventListener("keydown", onKeydown);
-document.addEventListener("mousedown", onKeydown);
+document.addEventListener("mou", onKeydown);
 
 var loadCounter = 0;
 function onload(){
