@@ -231,7 +231,7 @@ var cvs = document.getElementById("canvas");
 var ctx = cvs.getContext("2d");
 
 ctx.canvas.width  = 3000;
-ctx.canvas.height = 3000*window.innerHeight/window.innerWidth;
+ctx.canvas.height = 1500;
 
 var bdyshImg = new Image();
 var gameOverImg = new Image();
@@ -348,8 +348,8 @@ function draw() {
         barrier.draw(ctx);
     });
     player.draw(ctx);
-    ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
-    ctx.fillStyle = "#000";
+    //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
+    //ctx.fillStyle = "#000";
     //ctx.font = "24px Verdana";
     //ctx.fillText("Счет: " + score, 10, Math.floor(ctx.canvas.height));
 
