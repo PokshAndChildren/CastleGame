@@ -363,6 +363,8 @@ function onload(){
     loadCounter++;
     if (loadCounter >= 3 + fakes.length){    
         draw();
+    }
+}
 
 player.addOnload(onload);
 bg.addOnload(onload);
