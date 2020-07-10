@@ -22,9 +22,11 @@ ctx.canvas.height = 1950;
 var bdyshImg = new Image();
 var gameOverImg = new Image();
 var countersGround = new Image();
+var liveImg = new Image();
 bdyshImg.src = "img/bdysh.png";
 gameOverImg.src = "img/gameOver.png";
 countersGround.src = "img/countersGround.png";
+liveImg.src = "img/live.png";
 var bg = new Background(cvs);
 var fg = new Foreground(cvs);
 var floorY = cvs.height - fg.height*0.5;
@@ -149,12 +151,19 @@ function draw() {
     });
     player.draw(ctx);
     
+    // Счет
     ctx.fillStyle = "#000";
     ctx.font = "70px Times New Roman";
     ctx.drawImage(countersGround, 70, 70, 375, 110);
     //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
     ctx.fillText("Счет: " + score, 135, 150);
-    
+
+    // Жизни
+    var liveSize = 150;
+    for (let i = 0; i < lives; i++) {
+        ctx.drawImage(liveImg, ctx.canvas.width - (liveSize+15)*(i+1) - 75, 70, liveSize, liveSize);
+    }
+
     for (let i = barriers.length - 1; i >= 0; i--) {
         const bar = barriers[i];
         if (bar.right() < player.left() && bar.right() >= player.left() - hSpeed){

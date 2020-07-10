@@ -335,9 +335,11 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var bdyshImg = new Image();
     var gameOverImg = new Image();
     var countersGround = new Image();
+    var liveImg = new Image();
     bdyshImg.src = "img/bdysh.png";
     gameOverImg.src = "img/gameOver.png";
     countersGround.src = "img/countersGround.png";
+    liveImg.src = "img/live.png";
     var bg = new background_1.Background(cvs);
     var fg = new foreground_1.Foreground(cvs);
     var floorY = cvs.height - fg.height * 0.5;
@@ -447,11 +449,17 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
             barrier.draw(ctx);
         });
         player.draw(ctx);
+        // Счет
         ctx.fillStyle = "#000";
         ctx.font = "70px Times New Roman";
         ctx.drawImage(countersGround, 70, 70, 375, 110);
         //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
         ctx.fillText("Счет: " + score, 135, 150);
+        // Жизни
+        var liveSize = 150;
+        for (var i = 0; i < lives; i++) {
+            ctx.drawImage(liveImg, ctx.canvas.width - (liveSize + 15) * (i + 1) - 75, 70, liveSize, liveSize);
+        }
         for (var i = barriers.length - 1; i >= 0; i--) {
             var bar = barriers[i];
             if (bar.right() < player.left() && bar.right() >= player.left() - hSpeed) {
