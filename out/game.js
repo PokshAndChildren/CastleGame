@@ -368,6 +368,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         }
     }
     function gameOver() {
+        audio.pause();
         if (wasKeydown)
             location.reload();
         else {

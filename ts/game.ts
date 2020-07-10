@@ -62,6 +62,7 @@ function onKeydown() {
 }
 
 function gameOver(){
+    audio.pause();
     if (wasKeydown)
         location.reload();   
     else {
