@@ -32,9 +32,11 @@ var fg = new Foreground(cvs);
 var floorY = cvs.height - fg.height*0.5;
 var player = new Player(cvs, hSpeed, 0, floorY);
 
-var audio = new Audio('audio/sound.mp3');
-audio.loop = true;
-audio.autoplay = true;
+var sound = new Audio('audio/sound.mp3');
+var jampAud = new Audio("audio/jamp.mp3");
+var gameOverAud = new Audio("audio/gameOver.mp3");
+sound.loop = true;
+sound.autoplay = true;
 
 var fakes = [
     new Pumpkin(cvs.width, floorY, 0),
@@ -56,7 +58,7 @@ var score = 0;
 
 var wasKeydown = false;
 function onKeydown() {
-    audio.play();
+    sound.play();
     if ((lives == 0 || !player.isInJump()) && !wasKeydown) {
         wasKeydown = true;
         addBarrier();
@@ -64,11 +66,19 @@ function onKeydown() {
 }
 
 function gameOver(){
-    audio.pause();
+    sound.pause();
     if (wasKeydown)
         location.reload();   
     else {
         ctx.drawImage(gameOverImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        var text = "Счет: ";
+        ctx.fillStyle = "#000";
+        ctx.font = "200px Times New Roman";
+        var textWidth = ctx.measureText(text).width;
+        var textHeight = ctx.measureText('M').width;
+        ctx.fillText(text + score, (cvs.width - textWidth)/2, (cvs.height - textHeight)/2);
+
         var text = "Попробуй ещё раз!";
         ctx.fillStyle = "#000";
         ctx.font = "330px Times New Roman";
@@ -88,8 +98,10 @@ function bdysh(){
         bdyshCounter--;
     if (bdyshCounter == 0){
         lives--;
-        if (lives == 0)
+        if (lives == 0){
+            gameOverAud.play();
             gameOver();
+        }
         else
             reStart();
     } 
@@ -117,7 +129,7 @@ function draw() {
     });
     if (wasKeydown){
         wasKeydown = false;
-        player.jump(barriers);
+        player.jump(jampAud, barriers);
     }
     else
         player.move(barriers);

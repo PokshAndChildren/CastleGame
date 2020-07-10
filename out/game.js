@@ -221,7 +221,9 @@ define("shapes/player", ["require", "exports", "shapes/shape"], function (requir
             }
             this.inJump = this.bottom() < floorY;
         };
-        Player.prototype.jump = function (barriers) {
+        Player.prototype.jump = function (jampAud, barriers) {
+            // звук 
+            jampAud.play();
             this.vSpeed = Math.floor(-this.img.height / 12);
             this.y -= Math.floor(this.img.height / 1.7);
             this.move(barriers);
@@ -344,9 +346,11 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var fg = new foreground_1.Foreground(cvs);
     var floorY = cvs.height - fg.height * 0.5;
     var player = new player_1.Player(cvs, hSpeed, 0, floorY);
-    var audio = new Audio('audio/sound.mp3');
-    audio.loop = true;
-    audio.autoplay = true;
+    var sound = new Audio('audio/sound.mp3');
+    var jampAud = new Audio("audio/jamp.mp3");
+    var gameOverAud = new Audio("audio/gameOver.mp3");
+    sound.loop = true;
+    sound.autoplay = true;
     var fakes = [
         new pumpkin_1.Pumpkin(cvs.width, floorY, 0),
         new barrel_1.Barrel(cvs.width, floorY, 0),
@@ -363,18 +367,24 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var score = 0;
     var wasKeydown = false;
     function onKeydown() {
-        audio.play();
+        sound.play();
         if ((lives == 0 || !player.isInJump()) && !wasKeydown) {
             wasKeydown = true;
             addBarrier();
         }
     }
     function gameOver() {
-        audio.pause();
+        sound.pause();
         if (wasKeydown)
             location.reload();
         else {
             ctx.drawImage(gameOverImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
+            var text = "Счет: ";
+            ctx.fillStyle = "#000";
+            ctx.font = "200px Times New Roman";
+            var textWidth = ctx.measureText(text).width;
+            var textHeight = ctx.measureText('M').width;
+            ctx.fillText(text + score, (cvs.width - textWidth) / 2, (cvs.height - textHeight) / 2);
             var text = "Попробуй ещё раз!";
             ctx.fillStyle = "#000";
             ctx.font = "330px Times New Roman";
@@ -392,8 +402,10 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
             bdyshCounter--;
         if (bdyshCounter == 0) {
             lives--;
-            if (lives == 0)
+            if (lives == 0) {
+                gameOverAud.play();
                 gameOver();
+            }
             else
                 reStart();
         }
@@ -419,7 +431,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         });
         if (wasKeydown) {
             wasKeydown = false;
-            player.jump(barriers);
+            player.jump(jampAud, barriers);
         }
         else
             player.move(barriers);

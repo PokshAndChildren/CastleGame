@@ -60,7 +60,9 @@ export class Player extends Shape {
         this.inJump = this.bottom() < floorY; 
     }
 
-    jump(barriers: Iterable<Barrier>){
+    jump(jampAud: any, barriers: Iterable<Barrier>){
+        // звук 
+        jampAud.play();
         this.vSpeed = Math.floor(-this.img.height / 12);
         this.y -= Math.floor(this.img.height / 1.7);
         this.move(barriers);
