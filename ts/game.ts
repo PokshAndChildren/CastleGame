@@ -17,7 +17,7 @@ var cvs = document.getElementById("canvas") as HTMLCanvasElement;
 var ctx = cvs!.getContext("2d") as CanvasRenderingContext2D;
 
 ctx.canvas.width  = 4000;
-ctx.canvas.height = 2000;
+ctx.canvas.height = 1950;
 
 var bdyshImg = new Image();
 var gameOverImg = new Image();
@@ -45,7 +45,7 @@ function addBarrier(){
     barriers.push(new barrierType(cvs.width, floorY, player.hSpeed - hSpeed));
 }
 
-var lives = 1;
+var lives = 3;
 var score = 0;
 
 var wasKeydown = false;
@@ -142,12 +142,12 @@ function draw() {
         barrier.draw(ctx);
     });
     player.draw(ctx);
-    //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
-    //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
     
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "#000";
     ctx.font = "70px Times New Roman";
-    ctx.fillText("Счет: " + score, 60, 130);
+    ctx.drawImage(countersGround, 70, 70, 375, 110);
+    //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
+    ctx.fillText("Счет: " + score, 135, 150);
     
     for (let i = barriers.length - 1; i >= 0; i--) {
         const bar = barriers[i];
@@ -165,6 +165,7 @@ function draw() {
 
 document.addEventListener("keydown", onKeydown);
 document.addEventListener("mousedown", onKeydown);
+document.addEventListener("touchstart", onKeydown);
 
 var loadCounter = 0;
 function onload(){

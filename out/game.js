@@ -331,7 +331,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var cvs = document.getElementById("canvas");
     var ctx = cvs.getContext("2d");
     ctx.canvas.width = 4000;
-    ctx.canvas.height = 2000;
+    ctx.canvas.height = 1950;
     var bdyshImg = new Image();
     var gameOverImg = new Image();
     var countersGround = new Image();
@@ -354,7 +354,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         var barrierType = barrierTypes[barrierTypeIndex];
         barriers.push(new barrierType(cvs.width, floorY, player.hSpeed - hSpeed));
     }
-    var lives = 1;
+    var lives = 3;
     var score = 0;
     var wasKeydown = false;
     function onKeydown() {
@@ -442,11 +442,11 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
             barrier.draw(ctx);
         });
         player.draw(ctx);
-        //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
-        //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = "#000";
         ctx.font = "70px Times New Roman";
-        ctx.fillText("Счет: " + score, 60, 130);
+        ctx.drawImage(countersGround, 70, 70, 375, 110);
+        //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
+        ctx.fillText("Счет: " + score, 135, 150);
         for (var i = barriers.length - 1; i >= 0; i--) {
             var bar = barriers[i];
             if (bar.right() < player.left() && bar.right() >= player.left() - hSpeed) {
@@ -460,6 +460,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     }
     document.addEventListener("keydown", onKeydown);
     document.addEventListener("mousedown", onKeydown);
+    document.addEventListener("touchstart", onKeydown);
     var loadCounter = 0;
     function onload() {
         loadCounter++;
