@@ -30,6 +30,10 @@ var fg = new Foreground(cvs);
 var floorY = cvs.height - fg.height*0.5;
 var player = new Player(cvs, hSpeed, 0, floorY);
 
+var audio = new Audio('audio/sound.mp3');
+audio.loop = true;
+audio.autoplay = true;
+
 var fakes = [
     new Pumpkin(cvs.width, floorY, 0),
     new Barrel(cvs.width, floorY, 0),
@@ -50,6 +54,7 @@ var score = 0;
 
 var wasKeydown = false;
 function onKeydown() {
+    audio.play();
     if ((lives == 0 || !player.isInJump()) && !wasKeydown) {
         wasKeydown = true;
         addBarrier();

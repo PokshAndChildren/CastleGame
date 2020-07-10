@@ -342,6 +342,9 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var fg = new foreground_1.Foreground(cvs);
     var floorY = cvs.height - fg.height * 0.5;
     var player = new player_1.Player(cvs, hSpeed, 0, floorY);
+    var audio = new Audio('audio/sound.mp3');
+    audio.loop = true;
+    audio.autoplay = true;
     var fakes = [
         new pumpkin_1.Pumpkin(cvs.width, floorY, 0),
         new barrel_1.Barrel(cvs.width, floorY, 0),
@@ -358,6 +361,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var score = 0;
     var wasKeydown = false;
     function onKeydown() {
+        audio.play();
         if ((lives == 0 || !player.isInJump()) && !wasKeydown) {
             wasKeydown = true;
             addBarrier();
