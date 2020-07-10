@@ -45,25 +45,28 @@ function addBarrier(){
     barriers.push(new barrierType(cvs.width, floorY, player.hSpeed - hSpeed));
 }
 
+var lives = 1;
+var score = 0;
+
 var wasKeydown = false;
 function onKeydown() {
-    if (!player.isInJump() && !wasKeydown) {
+    if ((lives == 0 || !player.isInJump()) && !wasKeydown) {
         wasKeydown = true;
         addBarrier();
     }
 }
 
-var livesCounter = 0;
-var lives = 3;
 function gameOver(){
-    if (livesCounter == 0)
-        livesCounter = 30;
-    else
-        livesCounter--;
-    if (livesCounter == 0)
+    if (wasKeydown)
         location.reload();   
     else {
-        ctx.drawImage(gameOverImg, 0, 0, ctx.canvas.width, ctx.canvas.height)
+        ctx.drawImage(gameOverImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
+        var text = "Попробуй ещё раз!";
+        ctx.fillStyle = "#000";
+        ctx.font = "330px Times New Roman";
+        var textWidth = ctx.measureText(text).width;
+        var textHeight = ctx.measureText('M').width;
+        ctx.fillText(text, (cvs.width - textWidth)/2, (cvs.height + textHeight)/2);
         requestAnimationFrame(gameOver);
     }
     
@@ -140,12 +143,25 @@ function draw() {
     });
     player.draw(ctx);
     //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
-    //ctx.fillStyle = "#000";
-    //ctx.font = "24px Verdana";
-    //ctx.fillText("Счет: " + score, 10, Math.floor(ctx.canvas.height));
-
+    //ctx.drawImage(countersGround, 0, 0, ctx.canvas.width, Math.floor(ctx.canvas.height / 5));
+    
+    ctx.fillStyle = "#fff";
+    ctx.font = "70px Times New Roman";
+    ctx.fillText("Счет: " + score, 60, 130);
+    
+    for (let i = barriers.length - 1; i >= 0; i--) {
+        const bar = barriers[i];
+        if (bar.right() < player.left() && bar.right() >= player.left() - hSpeed){
+            score ++;
+        }
+        if (bar.right() < 0) {
+            barriers.splice(i, 1);
+        }
+    }
+    
     requestAnimationFrame(draw);
 }
+
 
 document.addEventListener("keydown", onKeydown);
 document.addEventListener("mousedown", onKeydown);
