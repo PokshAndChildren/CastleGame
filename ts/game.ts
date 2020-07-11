@@ -56,18 +56,26 @@ function addBarrier(){
 var lives = 3;
 var score = 0;
 
-var wasKeydown = false;
-function onKeydown() {
+var wasClicked = false;
+function onClick() {
     sound.play();
-    if ((lives == 0 || !player.isInJump()) && !wasKeydown) {
-        wasKeydown = true;
+    if ((lives == 0 || !player.isInJump()) && !wasClicked) {
+        wasClicked = true;
         addBarrier();
     }
+}
+var keydown = false;
+function onKeydown(){
+    keydown = true;
+    onClick();
+}
+function onKeyup(){
+    keydown = false;
 }
 
 function gameOver(){
     sound.pause();
-    if (wasKeydown)
+    if (wasClicked)
         location.reload();   
     else {
         ctx.drawImage(gameOverImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -127,8 +135,8 @@ function draw() {
     barriers.forEach(barrier => {
         barrier.move();
     });
-    if (wasKeydown){
-        wasKeydown = false;
+    if (wasClicked){
+        wasClicked = false;
         player.jump(jampAud, barriers);
     }
     else
@@ -176,23 +184,31 @@ function draw() {
         ctx.drawImage(liveImg, ctx.canvas.width - (liveSize+15)*(i+1) - 75, 70, liveSize, liveSize);
     }
 
+    // Подсчёт очков и удаление устаревших барьеров
     for (let i = barriers.length - 1; i >= 0; i--) {
         const bar = barriers[i];
-        if (bar.right() < player.left() && bar.right() >= player.left() - hSpeed){
+        if (bar instanceof Pumpkin && bar.boom) {
+            score += 2;
+        }
+        else if (bar.right() < player.left() && bar.right() >= player.left() - hSpeed){
             score ++;
         }
-        if (bar.right() < 0) {
+        if (bar.isOutdated()) {
             barriers.splice(i, 1);
         }
     }
+
+    if (keydown)
+        onClick();
     
     requestAnimationFrame(draw);
 }
 
 
 document.addEventListener("keydown", onKeydown);
-document.addEventListener("mousedown", onKeydown);
-document.addEventListener("touchstart", onKeydown);
+document.addEventListener("keyup", onKeyup);
+document.addEventListener("mousedown", onClick);
+document.addEventListener("touchstart", onClick);
 
 var loadCounter = 0;
 function onload(){

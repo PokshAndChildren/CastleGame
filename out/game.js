@@ -137,24 +137,77 @@ define("shapes/barriers/barrier", ["require", "exports", "shapes/shape"], functi
         function Barrier(name, cvsWidth, floorY, hSpeed, imgSrc) {
             return _super.call(this, name, cvsWidth + Math.random() * cvsWidth / 6, floorY, hSpeed, 0, imgSrc) || this;
         }
-        Barrier.prototype.getStand = function () {
-            return null;
+        Barrier.prototype.isOutdated = function () {
+            return this.right() < 0;
         };
-        Barrier.prototype.isHole = function () {
+        Barrier.prototype.getStand = function () {
+            return this.hasStand() ? this.top() + this.paddingY() : null;
+        };
+        Barrier.prototype.hasStand = function () {
             return false;
+        };
+        Barrier.prototype.isUnderOrBelow = function (player) {
+            return this.left() + this.paddingX() < player.right() && player.left() < this.right() - this.paddingX();
         };
         Barrier.prototype.inBarrier = function (player) {
             var stand = this.getStand();
             if (stand == null)
-                stand = this.top();
-            return (this.left() < player.right() && player.left() < this.right()
-                && stand < player.bottom());
+                stand = this.top() + this.paddingY();
+            return this.isUnderOrBelow(player) && stand < player.bottom();
+        };
+        Barrier.prototype.paddingX = function () {
+            var pad = Math.floor(this.img.width / 15);
+            return pad;
+        };
+        Barrier.prototype.paddingY = function () {
+            var pad = Math.floor(this.img.height / 20);
+            return pad;
         };
         return Barrier;
     }(shape_2.Shape));
     exports.Barrier = Barrier;
 });
-define("shapes/player", ["require", "exports", "shapes/shape"], function (require, exports, shape_3) {
+define("shapes/barriers/barrierBottom", ["require", "exports", "shapes/barriers/barrier"], function (require, exports, barrier_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.BarrierBottom = void 0;
+    var BarrierBottom = /** @class */ (function (_super) {
+        __extends(BarrierBottom, _super);
+        function BarrierBottom(name, cvsWidth, floorY, hSpeed, imgSrc) {
+            return _super.call(this, name, cvsWidth, floorY, hSpeed, imgSrc) || this;
+        }
+        BarrierBottom.prototype.onload = function () {
+            _super.prototype.onload.call(this);
+            this.y -= this.img.height * 0.4;
+        };
+        return BarrierBottom;
+    }(barrier_1.Barrier));
+    exports.BarrierBottom = BarrierBottom;
+});
+define("shapes/barriers/hole", ["require", "exports", "shapes/barriers/barrierBottom"], function (require, exports, barrierBottom_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Hole = void 0;
+    var Hole = /** @class */ (function (_super) {
+        __extends(Hole, _super);
+        function Hole(cvsWidth, floorY, hSpeed) {
+            return _super.call(this, "hole", cvsWidth, floorY, hSpeed, "img/barriers/hole.png") || this;
+        }
+        Hole.prototype.inBarrier = function (player) {
+            var padding = this.paddingY();
+            if (this.isUnderOrBelow(player) && (this.top() + this.paddingY() + 1 < player.bottom()))
+                return true;
+            else
+                return false;
+        };
+        Hole.prototype.paddingY = function () {
+            return this.img.height * 0.41;
+        };
+        return Hole;
+    }(barrierBottom_1.BarrierBottom));
+    exports.Hole = Hole;
+});
+define("shapes/player", ["require", "exports", "shapes/shape", "shapes/barriers/hole"], function (require, exports, shape_3, hole_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Player = void 0;
@@ -190,13 +243,13 @@ define("shapes/player", ["require", "exports", "shapes/shape"], function (requir
                         var barrier = barriers_1_1.value;
                         var barrierStand = barrier.getStand();
                         if (barrierStand != null && oldBottom <= barrierStand) {
-                            if (barrier.left() < this.right() && this.left() < barrier.right()) {
+                            if (barrier.isUnderOrBelow(this)) {
                                 if (floorY == null || floorY > barrierStand) {
                                     floorY = barrierStand;
                                 }
                             }
                         }
-                        else if (barrier.isHole()) {
+                        else if (barrier instanceof hole_1.Hole) {
                             var center = (this.left() + this.right()) / 2;
                             if (barrier.left() < center && center < barrier.right()) {
                                 if (floorY == null || floorY > barrier.bottom()) {
@@ -221,9 +274,9 @@ define("shapes/player", ["require", "exports", "shapes/shape"], function (requir
             }
             this.inJump = this.bottom() < floorY;
         };
-        Player.prototype.jump = function (jampAud, barriers) {
+        Player.prototype.jump = function (jumpSound, barriers) {
             // звук 
-            jampAud.play();
+            jumpSound.play();
             this.vSpeed = Math.floor(-this.img.height / 12);
             this.y -= Math.floor(this.img.height / 1.7);
             this.move(barriers);
@@ -235,7 +288,7 @@ define("shapes/player", ["require", "exports", "shapes/shape"], function (requir
     }(shape_3.Shape));
     exports.Player = Player;
 });
-define("shapes/barriers/barrierMiddle", ["require", "exports", "shapes/barriers/barrier"], function (require, exports, barrier_1) {
+define("shapes/barriers/barrierMiddle", ["require", "exports", "shapes/barriers/barrier"], function (require, exports, barrier_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BarrierMiddle = void 0;
@@ -248,8 +301,11 @@ define("shapes/barriers/barrierMiddle", ["require", "exports", "shapes/barriers/
             _super.prototype.onload.call(this);
             this.y -= this.img.height;
         };
+        BarrierMiddle.prototype.hasStand = function () {
+            return true;
+        };
         return BarrierMiddle;
-    }(barrier_1.Barrier));
+    }(barrier_2.Barrier));
     exports.BarrierMiddle = BarrierMiddle;
 });
 define("shapes/barriers/pumpkin", ["require", "exports", "shapes/barriers/barrierMiddle"], function (require, exports, barrierMiddle_1) {
@@ -259,10 +315,34 @@ define("shapes/barriers/pumpkin", ["require", "exports", "shapes/barriers/barrie
     var Pumpkin = /** @class */ (function (_super) {
         __extends(Pumpkin, _super);
         function Pumpkin(cvsWidth, floorY, hSpeed) {
-            return _super.call(this, "pumpkin", cvsWidth, floorY, hSpeed, "img/barriers/pumpkin.png") || this;
+            var _this = _super.call(this, "pumpkin", cvsWidth, floorY, hSpeed, "img/barriers/pumpkin.png") || this;
+            _this.boom = false;
+            _this.boomImg = new Image();
+            _this.boomImg.src = "img/barriers/boom.png";
+            return _this;
         }
-        Pumpkin.prototype.getStand = function () {
-            return this.top() + this.img.height / 3.5;
+        Pumpkin.prototype.paddingY = function () {
+            return this.img.height / 3.5;
+        };
+        Pumpkin.prototype.inBarrier = function (player) {
+            if (player.bottom() == this.getStand() && this.isUnderOrBelow(player))
+                this.boom = true;
+            return _super.prototype.inBarrier.call(this, player);
+        };
+        Pumpkin.prototype.isOutdated = function () {
+            return this.boom || _super.prototype.isOutdated.call(this);
+        };
+        Pumpkin.prototype.draw = function (ctx) {
+            if (this.boom) {
+                var centerX = (this.right() + this.left()) / 2;
+                var centerY = (this.top() + this.bottom()) / 2;
+                var x = centerX - this.boomImg.width / 2;
+                var y = centerY - this.boomImg.height / 2;
+                ctx.drawImage(this.boomImg, x, y);
+            }
+            else {
+                _super.prototype.draw.call(this, ctx);
+            }
         };
         return Pumpkin;
     }(barrierMiddle_1.BarrierMiddle));
@@ -277,52 +357,11 @@ define("shapes/barriers/barrel", ["require", "exports", "shapes/barriers/barrier
         function Barrel(cvsWidth, floorY, hSpeed) {
             return _super.call(this, "barrel", cvsWidth, floorY, hSpeed, "img/barriers/barrel.png") || this;
         }
-        Barrel.prototype.getStand = function () {
-            return this.top() + this.img.height / 20;
-        };
         return Barrel;
     }(barrierMiddle_2.BarrierMiddle));
     exports.Barrel = Barrel;
 });
-define("shapes/barriers/barrierBottom", ["require", "exports", "shapes/barriers/barrier"], function (require, exports, barrier_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.BarrierBottom = void 0;
-    var BarrierBottom = /** @class */ (function (_super) {
-        __extends(BarrierBottom, _super);
-        function BarrierBottom(name, cvsWidth, floorY, hSpeed, imgSrc) {
-            return _super.call(this, name, cvsWidth, floorY, hSpeed, imgSrc) || this;
-        }
-        BarrierBottom.prototype.onload = function () {
-            _super.prototype.onload.call(this);
-            this.y -= this.img.height * 0.4;
-        };
-        return BarrierBottom;
-    }(barrier_2.Barrier));
-    exports.BarrierBottom = BarrierBottom;
-});
-define("shapes/barriers/hole", ["require", "exports", "shapes/barriers/barrierBottom"], function (require, exports, barrierBottom_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Hole = void 0;
-    var Hole = /** @class */ (function (_super) {
-        __extends(Hole, _super);
-        function Hole(cvsWidth, floorY, hSpeed) {
-            return _super.call(this, "hole", cvsWidth, floorY, hSpeed, "img/barriers/hole.png") || this;
-        }
-        Hole.prototype.isHole = function () {
-            return true;
-        };
-        Hole.prototype.inBarrier = function (player) {
-            var padding = this.img.width / 4;
-            return (this.left() + padding < player.right() && player.left() < this.right() - padding
-                && this.top() < player.bottom());
-        };
-        return Hole;
-    }(barrierBottom_1.BarrierBottom));
-    exports.Hole = Hole;
-});
-define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/anygrounds/foreground", "shapes/player", "shapes/barriers/pumpkin", "shapes/barriers/barrel", "shapes/barriers/hole"], function (require, exports, background_1, foreground_1, player_1, pumpkin_1, barrel_1, hole_1) {
+define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/anygrounds/foreground", "shapes/player", "shapes/barriers/pumpkin", "shapes/barriers/barrel", "shapes/barriers/hole"], function (require, exports, background_1, foreground_1, player_1, pumpkin_1, barrel_1, hole_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     //x - вправо
@@ -354,9 +393,9 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var fakes = [
         new pumpkin_1.Pumpkin(cvs.width, floorY, 0),
         new barrel_1.Barrel(cvs.width, floorY, 0),
-        new hole_1.Hole(cvs.width, floorY, 0)
+        new hole_2.Hole(cvs.width, floorY, 0)
     ];
-    var barrierTypes = [barrel_1.Barrel, hole_1.Hole, pumpkin_1.Pumpkin];
+    var barrierTypes = [barrel_1.Barrel, hole_2.Hole, pumpkin_1.Pumpkin];
     var barriers = [];
     function addBarrier() {
         var barrierTypeIndex = Math.floor(Math.random() * barrierTypes.length);
@@ -365,17 +404,25 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     }
     var lives = 3;
     var score = 0;
-    var wasKeydown = false;
-    function onKeydown() {
+    var wasClicked = false;
+    function onClick() {
         sound.play();
-        if ((lives == 0 || !player.isInJump()) && !wasKeydown) {
-            wasKeydown = true;
+        if ((lives == 0 || !player.isInJump()) && !wasClicked) {
+            wasClicked = true;
             addBarrier();
         }
     }
+    var keydown = false;
+    function onKeydown() {
+        keydown = true;
+        onClick();
+    }
+    function onKeyup() {
+        keydown = false;
+    }
     function gameOver() {
         sound.pause();
-        if (wasKeydown)
+        if (wasClicked)
             location.reload();
         else {
             ctx.drawImage(gameOverImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -429,8 +476,8 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         barriers.forEach(function (barrier) {
             barrier.move();
         });
-        if (wasKeydown) {
-            wasKeydown = false;
+        if (wasClicked) {
+            wasClicked = false;
             player.jump(jampAud, barriers);
         }
         else
@@ -472,20 +519,27 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         for (var i = 0; i < lives; i++) {
             ctx.drawImage(liveImg, ctx.canvas.width - (liveSize + 15) * (i + 1) - 75, 70, liveSize, liveSize);
         }
+        // Подсчёт очков и удаление устаревших барьеров
         for (var i = barriers.length - 1; i >= 0; i--) {
             var bar = barriers[i];
-            if (bar.right() < player.left() && bar.right() >= player.left() - hSpeed) {
+            if (bar instanceof pumpkin_1.Pumpkin && bar.boom) {
+                score += 2;
+            }
+            else if (bar.right() < player.left() && bar.right() >= player.left() - hSpeed) {
                 score++;
             }
-            if (bar.right() < 0) {
+            if (bar.isOutdated()) {
                 barriers.splice(i, 1);
             }
         }
+        if (keydown)
+            onClick();
         requestAnimationFrame(draw);
     }
     document.addEventListener("keydown", onKeydown);
-    document.addEventListener("mousedown", onKeydown);
-    document.addEventListener("touchstart", onKeydown);
+    document.addEventListener("keyup", onKeyup);
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("touchstart", onClick);
     var loadCounter = 0;
     function onload() {
         loadCounter++;
@@ -510,8 +564,8 @@ define("shapes/barriers/pillar", ["require", "exports", "shapes/barriers/barrier
         function Pillar(cvsWidth, floorY, hSpeed) {
             return _super.call(this, "pillar", cvsWidth, floorY, hSpeed, "img/barriers/pillar.png") || this;
         }
-        Pillar.prototype.getStand = function () {
-            return null;
+        Pillar.prototype.hasStand = function () {
+            return false;
         };
         return Pillar;
     }(barrierMiddle_3.BarrierMiddle));

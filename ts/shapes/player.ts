@@ -1,5 +1,6 @@
 import {Shape} from "shape";
 import {Barrier} from "barriers/barrier";
+import { Hole } from "./barriers/hole";
 
 export class Player extends Shape {
     private inJump: boolean;
@@ -36,13 +37,13 @@ export class Player extends Shape {
             for (const barrier of barriers) {
                 var barrierStand = barrier.getStand();
                 if (barrierStand != null && oldBottom <= barrierStand){
-                    if (barrier.left() < this.right() && this.left() < barrier.right()){
+                    if (barrier.isUnderOrBelow(this)){
                         if (floorY == null || floorY > barrierStand) {
                             floorY = barrierStand;
                         }
                     }
                 }
-                else if (barrier.isHole()){
+                else if (barrier instanceof Hole){
                     var center = (this.left() + this.right()) / 2;
                     if (barrier.left() < center && center < barrier.right()){
                         if (floorY == null || floorY > barrier.bottom()) {
@@ -50,7 +51,7 @@ export class Player extends Shape {
                         }
                     }
                 }
-            }
+              }
         }
         floorY = floorY ?? this.floorY;
         if (this.bottom() > floorY) {
@@ -60,9 +61,9 @@ export class Player extends Shape {
         this.inJump = this.bottom() < floorY; 
     }
 
-    jump(jampAud: any, barriers: Iterable<Barrier>){
+    jump(jumpSound: any, barriers: Iterable<Barrier>){
         // звук 
-        jampAud.play();
+        jumpSound.play();
         this.vSpeed = Math.floor(-this.img.height / 12);
         this.y -= Math.floor(this.img.height / 1.7);
         this.move(barriers);
