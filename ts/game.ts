@@ -33,7 +33,7 @@ var floorY = cvs.height - fg.height*0.5;
 var player = new Player(cvs, hSpeed, 0, floorY);
 
 var sound = new Audio('audio/sound.mp3');
-var jampAud = new Audio("audio/jamp.mp3");
+var jumpAud = new Audio("audio/jump.mp3");
 var gameOverAud = new Audio("audio/gameOver.mp3");
 sound.loop = true;
 sound.autoplay = true;
@@ -80,19 +80,19 @@ function gameOver(){
     else {
         ctx.drawImage(gameOverImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        var text = "Счет: ";
+        var text = "Всего " + score + "?";
         ctx.fillStyle = "#000";
         ctx.font = "200px Times New Roman";
         var textWidth = ctx.measureText(text).width;
         var textHeight = ctx.measureText('M').width;
-        ctx.fillText(text + score, (cvs.width - textWidth)/2, (cvs.height - textHeight)/2);
+        ctx.fillText(text, (cvs.width - textWidth)/2, (cvs.height - textHeight)/2 - 100 );
 
-        var text = "Попробуй ещё раз!";
+        text = "Попробуй ещё раз!";
         ctx.fillStyle = "#000";
         ctx.font = "330px Times New Roman";
         var textWidth = ctx.measureText(text).width;
         var textHeight = ctx.measureText('M').width;
-        ctx.fillText(text, (cvs.width - textWidth)/2, (cvs.height + textHeight)/2);
+        ctx.fillText(text, (cvs.width - textWidth)/2, (cvs.height + textHeight)/2 + 85);
         requestAnimationFrame(gameOver);
     }
     
@@ -137,7 +137,7 @@ function draw() {
     });
     if (wasClicked){
         wasClicked = false;
-        player.jump(jampAud, barriers);
+        player.jump(jumpAud, barriers);
     }
     else
         player.move(barriers);
@@ -181,7 +181,7 @@ function draw() {
     // Жизни
     var liveSize = 150;
     for (let i = 0; i < lives; i++) {
-        ctx.drawImage(liveImg, ctx.canvas.width - (liveSize+15)*(i+1) - 75, 70, liveSize, liveSize);
+        ctx.drawImage(liveImg, ctx.canvas.width - (liveSize + 40)*(i+1) - 75, 70, liveSize, liveSize);
     }
 
     // Подсчёт очков и удаление устаревших барьеров

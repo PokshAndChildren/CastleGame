@@ -14,6 +14,6 @@ export class Hole extends BarrierBottom {
     }
 
     paddingY(){
-        return this.img.height * 0.41;
+        return this.img.height * 0.40;
     }
 }

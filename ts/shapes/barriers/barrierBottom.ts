@@ -7,6 +7,6 @@ export class BarrierBottom extends Barrier {
 
     onload(){
         super.onload();
-        this.y -= this.img.height*0.4;
+        this.y -= this.img.height*0.35;
     }
 }

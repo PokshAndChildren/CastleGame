@@ -178,7 +178,7 @@ define("shapes/barriers/barrierBottom", ["require", "exports", "shapes/barriers/
         }
         BarrierBottom.prototype.onload = function () {
             _super.prototype.onload.call(this);
-            this.y -= this.img.height * 0.4;
+            this.y -= this.img.height * 0.35;
         };
         return BarrierBottom;
     }(barrier_1.Barrier));
@@ -201,7 +201,7 @@ define("shapes/barriers/hole", ["require", "exports", "shapes/barriers/barrierBo
                 return false;
         };
         Hole.prototype.paddingY = function () {
-            return this.img.height * 0.41;
+            return this.img.height * 0.40;
         };
         return Hole;
     }(barrierBottom_1.BarrierBottom));
@@ -319,14 +319,17 @@ define("shapes/barriers/pumpkin", ["require", "exports", "shapes/barriers/barrie
             _this.boom = false;
             _this.boomImg = new Image();
             _this.boomImg.src = "img/barriers/boom.png";
+            _this.boomAud = new Audio("audio/boom.mp3");
             return _this;
         }
         Pumpkin.prototype.paddingY = function () {
             return this.img.height / 3.5;
         };
         Pumpkin.prototype.inBarrier = function (player) {
-            if (player.bottom() == this.getStand() && this.isUnderOrBelow(player))
+            if (player.bottom() == this.getStand() && this.isUnderOrBelow(player)) {
                 this.boom = true;
+                this.boomAud.play();
+            }
             return _super.prototype.inBarrier.call(this, player);
         };
         Pumpkin.prototype.isOutdated = function () {
@@ -386,7 +389,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var floorY = cvs.height - fg.height * 0.5;
     var player = new player_1.Player(cvs, hSpeed, 0, floorY);
     var sound = new Audio('audio/sound.mp3');
-    var jampAud = new Audio("audio/jamp.mp3");
+    var jumpAud = new Audio("audio/jump.mp3");
     var gameOverAud = new Audio("audio/gameOver.mp3");
     sound.loop = true;
     sound.autoplay = true;
@@ -426,18 +429,18 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
             location.reload();
         else {
             ctx.drawImage(gameOverImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
-            var text = "Счет: ";
+            var text = "Всего " + score + "?";
             ctx.fillStyle = "#000";
             ctx.font = "200px Times New Roman";
             var textWidth = ctx.measureText(text).width;
             var textHeight = ctx.measureText('M').width;
-            ctx.fillText(text + score, (cvs.width - textWidth) / 2, (cvs.height - textHeight) / 2);
-            var text = "Попробуй ещё раз!";
+            ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height - textHeight) / 2 - 100);
+            text = "Попробуй ещё раз!";
             ctx.fillStyle = "#000";
             ctx.font = "330px Times New Roman";
             var textWidth = ctx.measureText(text).width;
             var textHeight = ctx.measureText('M').width;
-            ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height + textHeight) / 2);
+            ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height + textHeight) / 2 + 85);
             requestAnimationFrame(gameOver);
         }
     }
@@ -478,7 +481,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         });
         if (wasClicked) {
             wasClicked = false;
-            player.jump(jampAud, barriers);
+            player.jump(jumpAud, barriers);
         }
         else
             player.move(barriers);
@@ -517,7 +520,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         // Жизни
         var liveSize = 150;
         for (var i = 0; i < lives; i++) {
-            ctx.drawImage(liveImg, ctx.canvas.width - (liveSize + 15) * (i + 1) - 75, 70, liveSize, liveSize);
+            ctx.drawImage(liveImg, ctx.canvas.width - (liveSize + 40) * (i + 1) - 75, 70, liveSize, liveSize);
         }
         // Подсчёт очков и удаление устаревших барьеров
         for (var i = barriers.length - 1; i >= 0; i--) {

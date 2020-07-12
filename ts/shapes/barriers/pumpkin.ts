@@ -4,12 +4,14 @@ import { Player } from "../player";
 export class Pumpkin extends BarrierMiddle {
     boom: boolean;
     private boomImg : HTMLImageElement;
+    private boomAud: HTMLAudioElement;
 
     constructor(cvsWidth: number, floorY: number, hSpeed: number){
         super("pumpkin", cvsWidth, floorY, hSpeed, "img/barriers/pumpkin.png");
         this.boom = false;
         this.boomImg = new Image();
         this.boomImg.src = "img/barriers/boom.png";
+        this.boomAud = new Audio("audio/boom.mp3");
     }
 
     paddingY() {
@@ -17,8 +19,10 @@ export class Pumpkin extends BarrierMiddle {
     }
 
     inBarrier(player: Player){
-        if (player.bottom() == this.getStand() && this.isUnderOrBelow(player))
+        if (player.bottom() == this.getStand() && this.isUnderOrBelow(player)){
             this.boom = true;
+            this.boomAud.play();
+        }
         return super.inBarrier(player);
     }
 
