@@ -185,6 +185,7 @@ function draw() {
     }
 
     // Подсчёт очков и удаление устаревших барьеров
+    var oldScore = score;
     for (let i = barriers.length - 1; i >= 0; i--) {
         const bar = barriers[i];
         if (bar instanceof Pumpkin && bar.boom) {
@@ -196,6 +197,21 @@ function draw() {
         if (bar.isOutdated()) {
             barriers.splice(i, 1);
         }
+    }
+    var speedScore = 20;
+    var speedDiff = Math.floor(score / speedScore) - Math.floor(oldScore / speedScore);
+    if (speedDiff > 0) {
+        hSpeed += 1;
+        bg.hSpeed = Math.floor(-hSpeed / 2);
+        fg.hSpeed = -hSpeed;  
+        
+        for (const i of barriers) {
+            i.hSpeed = -hSpeed;  
+        }
+    }
+    var barScore = 25;
+    if (Math.floor(score / barScore) - Math.floor(oldScore / barScore) > 0) {
+        addBarrier();
     }
 
     if (keydown)

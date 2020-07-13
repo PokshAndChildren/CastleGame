@@ -473,6 +473,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         requestAnimationFrame(draw);
     }
     function draw() {
+        var e_2, _a;
         // Сдвиг
         bg.move();
         fg.move();
@@ -523,6 +524,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
             ctx.drawImage(liveImg, ctx.canvas.width - (liveSize + 40) * (i + 1) - 75, 70, liveSize, liveSize);
         }
         // Подсчёт очков и удаление устаревших барьеров
+        var oldScore = score;
         for (var i = barriers.length - 1; i >= 0; i--) {
             var bar = barriers[i];
             if (bar instanceof pumpkin_1.Pumpkin && bar.boom) {
@@ -534,6 +536,30 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
             if (bar.isOutdated()) {
                 barriers.splice(i, 1);
             }
+        }
+        var speedScore = 20;
+        var speedDiff = Math.floor(score / speedScore) - Math.floor(oldScore / speedScore);
+        if (speedDiff > 0) {
+            hSpeed += 1;
+            bg.hSpeed = Math.floor(-hSpeed / 2);
+            fg.hSpeed = -hSpeed;
+            try {
+                for (var barriers_2 = __values(barriers), barriers_2_1 = barriers_2.next(); !barriers_2_1.done; barriers_2_1 = barriers_2.next()) {
+                    var i = barriers_2_1.value;
+                    i.hSpeed = -hSpeed;
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (barriers_2_1 && !barriers_2_1.done && (_a = barriers_2.return)) _a.call(barriers_2);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
+        }
+        var barScore = 25;
+        if (Math.floor(score / barScore) - Math.floor(oldScore / barScore) > 0) {
+            addBarrier();
         }
         if (keydown)
             onClick();
