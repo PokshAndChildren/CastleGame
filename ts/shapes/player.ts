@@ -62,11 +62,15 @@ export class Player extends Shape {
     }
 
     jump(jumpSound: any, barriers: Iterable<Barrier>){
-        // звук 
-        jumpSound.play();
-        this.vSpeed = Math.floor(-this.img.height / 12);
-        this.y -= Math.floor(this.img.height / 1.7);
-        this.move(barriers);
+        if (!this.isInJump()) {
+            // звук 
+            jumpSound.play();
+            this.vSpeed = Math.floor(-this.img.height / 12);
+            this.y -= Math.floor(this.img.height / 1.7);
+            this.move(barriers);
+            return true;
+        }
+        return false;
     }
 
     isInJump(){

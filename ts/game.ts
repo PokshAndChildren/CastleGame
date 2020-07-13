@@ -23,10 +23,13 @@ var bdyshImg = new Image();
 var gameOverImg = new Image();
 var countersGround = new Image();
 var liveImg = new Image();
+var startImg = new Image();
 bdyshImg.src = "img/bdysh.png";
 gameOverImg.src = "img/gameOver.png";
 countersGround.src = "img/countersGround.png";
 liveImg.src = "img/live.png";
+startImg.src = "img/start.png";
+
 var bg = new Background(cvs);
 var fg = new Foreground(cvs);
 var floorY = cvs.height - fg.height*0.5;
@@ -59,9 +62,8 @@ var score = 0;
 var wasClicked = false;
 function onClick() {
     sound.play();
-    if ((lives == 0 || !player.isInJump()) && !wasClicked) {
+    if (!wasClicked) {
         wasClicked = true;
-        addBarrier();
     }
 }
 var keydown = false;
@@ -135,12 +137,11 @@ function draw() {
     barriers.forEach(barrier => {
         barrier.move();
     });
-    if (wasClicked){
-        wasClicked = false;
-        player.jump(jumpAud, barriers);
-    }
+    if (wasClicked && player.jump(jumpAud, barriers))
+        addBarrier();
     else
         player.move(barriers);
+    wasClicked = false;
 
     // Проверка на конец выбегания
     if (player.hSpeed == 0) {
@@ -229,8 +230,19 @@ document.addEventListener("touchstart", onClick);
 var loadCounter = 0;
 function onload(){
     loadCounter++;
-    if (loadCounter >= 3 + fakes.length){ 
-        reStart();
+    if (loadCounter >= 3 + fakes.length){
+        if (wasClicked)
+            reStart();
+        else {    
+            ctx.drawImage(startImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
+            var text = "Хрумзик Веня, или прогулка по замку.";
+            ctx.fillStyle = "#000";
+            ctx.font = "200px Times New Roman";
+            var textWidth = ctx.measureText(text).width;
+            var textHeight = ctx.measureText('M').width;
+            ctx.fillText(text, (cvs.width - textWidth)/2, (cvs.height + textHeight)/2);
+            requestAnimationFrame(onload);
+        }
     }
 }
 

@@ -275,11 +275,15 @@ define("shapes/player", ["require", "exports", "shapes/shape", "shapes/barriers/
             this.inJump = this.bottom() < floorY;
         };
         Player.prototype.jump = function (jumpSound, barriers) {
-            // звук 
-            jumpSound.play();
-            this.vSpeed = Math.floor(-this.img.height / 12);
-            this.y -= Math.floor(this.img.height / 1.7);
-            this.move(barriers);
+            if (!this.isInJump()) {
+                // звук 
+                jumpSound.play();
+                this.vSpeed = Math.floor(-this.img.height / 12);
+                this.y -= Math.floor(this.img.height / 1.7);
+                this.move(barriers);
+                return true;
+            }
+            return false;
         };
         Player.prototype.isInJump = function () {
             return this.inJump;
@@ -380,10 +384,12 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var gameOverImg = new Image();
     var countersGround = new Image();
     var liveImg = new Image();
+    var startImg = new Image();
     bdyshImg.src = "img/bdysh.png";
     gameOverImg.src = "img/gameOver.png";
     countersGround.src = "img/countersGround.png";
     liveImg.src = "img/live.png";
+    startImg.src = "img/start.png";
     var bg = new background_1.Background(cvs);
     var fg = new foreground_1.Foreground(cvs);
     var floorY = cvs.height - fg.height * 0.5;
@@ -410,9 +416,8 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var wasClicked = false;
     function onClick() {
         sound.play();
-        if ((lives == 0 || !player.isInJump()) && !wasClicked) {
+        if (!wasClicked) {
             wasClicked = true;
-            addBarrier();
         }
     }
     var keydown = false;
@@ -480,12 +485,11 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         barriers.forEach(function (barrier) {
             barrier.move();
         });
-        if (wasClicked) {
-            wasClicked = false;
-            player.jump(jumpAud, barriers);
-        }
+        if (wasClicked && player.jump(jumpAud, barriers))
+            addBarrier();
         else
             player.move(barriers);
+        wasClicked = false;
         // Проверка на конец выбегания
         if (player.hSpeed == 0) {
             bg.hSpeed = -hSpeed / 2;
@@ -573,7 +577,18 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     function onload() {
         loadCounter++;
         if (loadCounter >= 3 + fakes.length) {
-            reStart();
+            if (wasClicked)
+                reStart();
+            else {
+                ctx.drawImage(startImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                var text = "Хрумзик Веня, или прогулка по замку.";
+                ctx.fillStyle = "#000";
+                ctx.font = "200px Times New Roman";
+                var textWidth = ctx.measureText(text).width;
+                var textHeight = ctx.measureText('M').width;
+                ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height + textHeight) / 2);
+                requestAnimationFrame(onload);
+            }
         }
     }
     player.addOnload(onload);
