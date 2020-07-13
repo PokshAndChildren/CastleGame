@@ -1,3 +1,4 @@
+import {AutoPause} from "autopause";
 import {Background} from "shapes/anygrounds/background";
 import {Foreground} from "shapes/anygrounds/foreground";
 import {Player} from "shapes/player";
@@ -40,6 +41,8 @@ var jumpAud = new Audio("audio/jump.mp3");
 var gameOverAud = new Audio("audio/gameOver.mp3");
 sound.loop = true;
 sound.autoplay = true;
+var autopause = new AutoPause();
+autopause.add(sound);
 
 var fakes = [
     new Pumpkin(cvs.width, floorY, 0),
@@ -61,7 +64,7 @@ var score = 0;
 
 var wasClicked = false;
 function onClick() {
-    sound.play();
+    autopause.play();
     if (!wasClicked) {
         wasClicked = true;
     }
@@ -76,7 +79,7 @@ function onKeyup(){
 }
 
 function gameOver(){
-    sound.pause();
+    autopause.pause();
     if (wasClicked)
         location.reload();   
     else {

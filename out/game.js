@@ -1,3 +1,14 @@
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -11,17 +22,121 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
+define("autopause", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.AutoPause = void 0;
+    // @ts-nocheck
+    var AutoPause = /** @class */ (function () {
+        function AutoPause() {
+            this.mediaElements = [];
+            this.playing = false;
+            // Set the name of the hidden property and the change event for visibility
+            var hidden, visibilityChange;
+            if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+                hidden = "hidden";
+                visibilityChange = "visibilitychange";
+            }
+            else if (typeof document.msHidden !== "undefined") {
+                hidden = "msHidden";
+                visibilityChange = "msvisibilitychange";
+            }
+            else if (typeof document.webkitHidden !== "undefined") {
+                hidden = "webkitHidden";
+                visibilityChange = "webkitvisibilitychange";
+            }
+            var self = this;
+            // If the page is hidden, pause the video;
+            // if the page is shown, play the video
+            function handleVisibilityChange() {
+                var e_1, _a, e_2, _b;
+                if (document[hidden]) {
+                    try {
+                        for (var _c = __values(self.mediaElements), _d = _c.next(); !_d.done; _d = _c.next()) {
+                            var media = _d.value;
+                            media.pause();
+                        }
+                    }
+                    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                    finally {
+                        try {
+                            if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
+                        }
+                        finally { if (e_1) throw e_1.error; }
+                    }
+                }
+                else {
+                    if (self.playing) {
+                        try {
+                            for (var _e = __values(self.mediaElements), _f = _e.next(); !_f.done; _f = _e.next()) {
+                                var media = _f.value;
+                                media.play();
+                            }
+                        }
+                        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                        finally {
+                            try {
+                                if (_f && !_f.done && (_b = _e.return)) _b.call(_e);
+                            }
+                            finally { if (e_2) throw e_2.error; }
+                        }
+                    }
+                }
+            }
+            // Warn if the browser doesn't support addEventListener or the Page Visibility API
+            if (typeof document.addEventListener === "undefined" || hidden === undefined) {
+                console.log("This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.");
+            }
+            else {
+                // Handle page visibility change   
+                document.addEventListener(visibilityChange, handleVisibilityChange, false);
+            }
         }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
+        AutoPause.prototype.add = function (media) {
+            this.mediaElements.push(media);
+            if (this.playing)
+                media.play();
+            else
+                media.pause();
+        };
+        AutoPause.prototype.play = function () {
+            var e_3, _a;
+            this.playing = true;
+            try {
+                for (var _b = __values(this.mediaElements), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var media = _c.value;
+                    media.play();
+                }
+            }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_3) throw e_3.error; }
+            }
+        };
+        AutoPause.prototype.pause = function () {
+            var e_4, _a;
+            this.playing = false;
+            try {
+                for (var _b = __values(this.mediaElements), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var media = _c.value;
+                    media.pause();
+                }
+            }
+            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_4) throw e_4.error; }
+            }
+        };
+        return AutoPause;
+    }());
+    exports.AutoPause = AutoPause;
+});
 define("shapes/shape", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -228,7 +343,7 @@ define("shapes/player", ["require", "exports", "shapes/shape", "shapes/barriers/
             this.inJump = true;
         };
         Player.prototype.move = function (barriers) {
-            var e_1, _a;
+            var e_5, _a;
             var oldBottom = this.bottom();
             this.vSpeed += this.img.height / 350;
             _super.prototype.move.call(this);
@@ -259,12 +374,12 @@ define("shapes/player", ["require", "exports", "shapes/shape", "shapes/barriers/
                         }
                     }
                 }
-                catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                catch (e_5_1) { e_5 = { error: e_5_1 }; }
                 finally {
                     try {
                         if (barriers_1_1 && !barriers_1_1.done && (_a = barriers_1.return)) _a.call(barriers_1);
                     }
-                    finally { if (e_1) throw e_1.error; }
+                    finally { if (e_5) throw e_5.error; }
                 }
             }
             floorY = floorY !== null && floorY !== void 0 ? floorY : this.floorY;
@@ -368,7 +483,7 @@ define("shapes/barriers/barrel", ["require", "exports", "shapes/barriers/barrier
     }(barrierMiddle_2.BarrierMiddle));
     exports.Barrel = Barrel;
 });
-define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/anygrounds/foreground", "shapes/player", "shapes/barriers/pumpkin", "shapes/barriers/barrel", "shapes/barriers/hole"], function (require, exports, background_1, foreground_1, player_1, pumpkin_1, barrel_1, hole_2) {
+define("game", ["require", "exports", "autopause", "shapes/anygrounds/background", "shapes/anygrounds/foreground", "shapes/player", "shapes/barriers/pumpkin", "shapes/barriers/barrel", "shapes/barriers/hole"], function (require, exports, autopause_1, background_1, foreground_1, player_1, pumpkin_1, barrel_1, hole_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     //x - вправо
@@ -399,6 +514,8 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var gameOverAud = new Audio("audio/gameOver.mp3");
     sound.loop = true;
     sound.autoplay = true;
+    var autopause = new autopause_1.AutoPause();
+    autopause.add(sound);
     var fakes = [
         new pumpkin_1.Pumpkin(cvs.width, floorY, 0),
         new barrel_1.Barrel(cvs.width, floorY, 0),
@@ -415,7 +532,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
     var score = 0;
     var wasClicked = false;
     function onClick() {
-        sound.play();
+        autopause.play();
         if (!wasClicked) {
             wasClicked = true;
         }
@@ -429,7 +546,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         keydown = false;
     }
     function gameOver() {
-        sound.pause();
+        autopause.pause();
         if (wasClicked)
             location.reload();
         else {
@@ -478,7 +595,7 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
         requestAnimationFrame(draw);
     }
     function draw() {
-        var e_2, _a;
+        var e_6, _a;
         // Сдвиг
         bg.move();
         fg.move();
@@ -553,12 +670,12 @@ define("game", ["require", "exports", "shapes/anygrounds/background", "shapes/an
                     i.hSpeed = -hSpeed;
                 }
             }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            catch (e_6_1) { e_6 = { error: e_6_1 }; }
             finally {
                 try {
                     if (barriers_2_1 && !barriers_2_1.done && (_a = barriers_2.return)) _a.call(barriers_2);
                 }
-                finally { if (e_2) throw e_2.error; }
+                finally { if (e_6) throw e_6.error; }
             }
         }
         var barScore = 25;
