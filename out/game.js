@@ -330,9 +330,10 @@ define("shapes/player", ["require", "exports", "shapes/shape", "shapes/barriers/
         __extends(Player, _super);
         function Player(cvs, hSpeed, vSpeed, floorY) {
             var _this = _super.call(this, "player", 0, 0, hSpeed, vSpeed, "img/player.png") || this;
+            _this.finished = false;
             _this.floorY = floorY;
             _this.inJump = true;
-            _this.requiredX = cvs.width / 3;
+            _this.requiredX = cvs.width / 4;
             _this.restart(hSpeed);
             return _this;
         }
@@ -347,7 +348,7 @@ define("shapes/player", ["require", "exports", "shapes/shape", "shapes/barriers/
             var oldBottom = this.bottom();
             this.vSpeed += this.img.height / 350;
             _super.prototype.move.call(this);
-            if (this.x > this.requiredX) {
+            if (this.x > this.requiredX && !this.finished) {
                 this.x = this.requiredX;
                 this.hSpeed = 0;
             }
@@ -500,11 +501,13 @@ define("game", ["require", "exports", "autopause", "shapes/anygrounds/background
     var countersGround = new Image();
     var liveImg = new Image();
     var startImg = new Image();
+    var winImg = new Image();
     bdyshImg.src = "img/bdysh.png";
     gameOverImg.src = "img/gameOver.png";
     countersGround.src = "img/countersGround.png";
     liveImg.src = "img/live.png";
     startImg.src = "img/start.png";
+    winImg.src = "img/win.png";
     var bg = new background_1.Background(cvs);
     var fg = new foreground_1.Foreground(cvs);
     var floorY = cvs.height - fg.height * 0.5;
@@ -529,6 +532,7 @@ define("game", ["require", "exports", "autopause", "shapes/anygrounds/background
         barriers.push(new barrierType(cvs.width, floorY, player.hSpeed - hSpeed));
     }
     var lives = 3;
+    var maxScore = 250;
     var score = 0;
     var wasClicked = false;
     function onClick() {
@@ -543,6 +547,27 @@ define("game", ["require", "exports", "autopause", "shapes/anygrounds/background
     }
     function onKeyup() {
         keydown = false;
+    }
+    function win() {
+        autopause.pause();
+        if (wasClicked)
+            location.reload();
+        else {
+            ctx.drawImage(winImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
+            var text = "Твой результат - " + score + "!";
+            ctx.fillStyle = "#000";
+            ctx.font = "200px Times New Roman";
+            var textWidth = ctx.measureText(text).width;
+            var textHeight = ctx.measureText('M').width;
+            ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height - textHeight) / 2 - 100);
+            text = "Победа!";
+            ctx.fillStyle = "#000";
+            ctx.font = "330px Times New Roman";
+            var textWidth = ctx.measureText(text).width;
+            var textHeight = ctx.measureText('M').width;
+            ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height + textHeight) / 2 + 85);
+            requestAnimationFrame(win);
+        }
     }
     function gameOver() {
         autopause.pause();
@@ -596,14 +621,28 @@ define("game", ["require", "exports", "autopause", "shapes/anygrounds/background
     }
     function draw() {
         var e_6, _a;
+        if (score >= maxScore && barriers.length == 0) {
+            bg.hSpeed = 0;
+            fg.hSpeed = 0;
+            player.hSpeed = hSpeed;
+            player.finished = true;
+        }
+        if (player.x >= ctx.canvas.width) {
+            wasClicked = false;
+            win();
+            return;
+        }
         // Сдвиг
         bg.move();
         fg.move();
         barriers.forEach(function (barrier) {
             barrier.move();
         });
-        if (wasClicked && player.jump(jumpAud, barriers))
-            addBarrier();
+        if (wasClicked && player.jump(jumpAud, barriers)) {
+            if (score < maxScore) {
+                addBarrier();
+            }
+        }
         else
             player.move(barriers);
         wasClicked = false;

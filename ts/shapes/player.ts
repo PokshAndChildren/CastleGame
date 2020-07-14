@@ -6,12 +6,13 @@ export class Player extends Shape {
     private inJump: boolean;
     private requiredX: number;
     private floorY: any;
+    public finished: boolean = false;
 
     constructor(cvs: HTMLCanvasElement, hSpeed: number, vSpeed: number, floorY: any){
         super("player", 0, 0, hSpeed, vSpeed, "img/player.png");
         this.floorY = floorY;
         this.inJump = true;
-        this.requiredX = cvs.width/3;
+        this.requiredX = cvs.width/4;
         this.restart(hSpeed);
     }
 
@@ -28,7 +29,7 @@ export class Player extends Shape {
         var oldBottom = this.bottom();
         this.vSpeed += this.img.height / 350;
         super.move();
-        if (this.x > this.requiredX){
+        if (this.x > this.requiredX && !this.finished){
             this.x = this.requiredX;
             this.hSpeed = 0;
         }
