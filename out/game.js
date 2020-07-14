@@ -532,7 +532,6 @@ define("game", ["require", "exports", "autopause", "shapes/anygrounds/background
     var score = 0;
     var wasClicked = false;
     function onClick() {
-        autopause.play();
         if (!wasClicked) {
             wasClicked = true;
         }
@@ -587,6 +586,7 @@ define("game", ["require", "exports", "autopause", "shapes/anygrounds/background
         }
     }
     function reStart() {
+        autopause.play();
         bg.hSpeed = 0;
         fg.hSpeed = 0;
         player.restart(hSpeed);
@@ -698,12 +698,24 @@ define("game", ["require", "exports", "autopause", "shapes/anygrounds/background
                 reStart();
             else {
                 ctx.drawImage(startImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
-                var text = "Хрумзик Веня, или прогулка по замку.";
+                var text = "ХРУМЗИК ВЕНЯ";
                 ctx.fillStyle = "#000";
-                ctx.font = "200px Times New Roman";
+                ctx.font = "300px Times New Roman";
+                var textWidth = ctx.measureText(text).width;
+                var textHeight = ctx.measureText('M').width;
+                ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height + textHeight) / 2 - 250);
+                var text = "или";
+                ctx.fillStyle = "#000";
+                ctx.font = "100px Times New Roman";
                 var textWidth = ctx.measureText(text).width;
                 var textHeight = ctx.measureText('M').width;
                 ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height + textHeight) / 2);
+                var text = "ПРОГУЛКА ПО ЗАМКУ";
+                ctx.fillStyle = "#000";
+                ctx.font = "150px Times New Roman";
+                var textWidth = ctx.measureText(text).width;
+                var textHeight = ctx.measureText('M').width;
+                ctx.fillText(text, (cvs.width - textWidth) / 2, (cvs.height + textHeight) / 2 + 180);
                 requestAnimationFrame(onload);
             }
         }
