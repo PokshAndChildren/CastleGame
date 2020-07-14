@@ -179,6 +179,7 @@ function draw() {
         barrier.move();
     });
     if (wasClicked && player.jump(jumpAud, barriers)){
+        sound.play();
         if (score < maxScore) {
             addBarrier();
         }

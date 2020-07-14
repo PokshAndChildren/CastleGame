@@ -639,6 +639,7 @@ define("game", ["require", "exports", "autopause", "shapes/anygrounds/background
             barrier.move();
         });
         if (wasClicked && player.jump(jumpAud, barriers)) {
+            sound.play();
             if (score < maxScore) {
                 addBarrier();
             }
