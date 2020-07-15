@@ -37,9 +37,9 @@ var gameOverImg = borderImg;
 // countersGround.src = "img/countersGround.png";
 var countersGround = borderImg;
 
-// var startImg = new Image();
-// startImg.src = "img/start.png";
-var startImg = borderImg;
+var startImg = new Image();
+startImg.src = "img/start.png";
+// var startImg = borderImg;
 
 // var winImg = new Image();
 // winImg.src = "img/win.png";
@@ -293,26 +293,27 @@ function onload(){
         else {    
             ctx.drawImage(startImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
 
+            var otstup = 400;
             var text = "ХРУМЗИК ВЕНЯ";
             ctx.fillStyle = "#000";
-            ctx.font = "300px Times New Roman";
+            ctx.font = "250px Times New Roman";
             var textWidth = ctx.measureText(text).width;
             var textHeight = ctx.measureText('M').width;
-            ctx.fillText(text, (cvs.width - textWidth)/2, (cvs.height + textHeight)/2 - 250);
+            ctx.fillText(text, (cvs.width - textWidth)/2 - otstup, (cvs.height + textHeight)/2 - 350);
 
             var text = "или";
             ctx.fillStyle = "#000";
-            ctx.font = "100px Times New Roman";
+            ctx.font = "150px Times New Roman";
             var textWidth = ctx.measureText(text).width;
             var textHeight = ctx.measureText('M').width;
-            ctx.fillText(text, (cvs.width - textWidth)/2, (cvs.height + textHeight)/2);
+            ctx.fillText(text, (cvs.width - textWidth)/2 - otstup, (cvs.height + textHeight)/2);
 
             var text = "ПРОГУЛКА ПО ЗАМКУ";
             ctx.fillStyle = "#000";
             ctx.font = "150px Times New Roman";
             var textWidth = ctx.measureText(text).width;
             var textHeight = ctx.measureText('M').width;
-            ctx.fillText(text, (cvs.width - textWidth)/2, (cvs.height + textHeight)/2 + 180);
+            ctx.fillText(text, (cvs.width - textWidth)/2 - otstup, (cvs.height + textHeight)/2 + 280);
 
             requestAnimationFrame(onload);
         }
