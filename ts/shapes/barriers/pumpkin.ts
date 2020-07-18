@@ -22,6 +22,7 @@ export class Pumpkin extends BarrierMiddle {
         if (player.bottom() == this.getStand() && this.isUnderOrBelow(player)){
             this.boom = true;
             this.boomAud.play();
+            player.vSpeed = Math.floor(-this.img.height / 24);
         }
         return super.inBarrier(player);
     }

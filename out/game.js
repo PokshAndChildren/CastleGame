@@ -449,6 +449,7 @@ define("shapes/barriers/pumpkin", ["require", "exports", "shapes/barriers/barrie
             if (player.bottom() == this.getStand() && this.isUnderOrBelow(player)) {
                 this.boom = true;
                 this.boomAud.play();
+                player.vSpeed = Math.floor(-this.img.height / 24);
             }
             return _super.prototype.inBarrier.call(this, player);
         };
